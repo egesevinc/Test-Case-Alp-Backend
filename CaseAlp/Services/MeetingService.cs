@@ -1,4 +1,6 @@
-﻿using CaseAlp.Models;
+﻿using CaseAlp.Data;
+using CaseAlp.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,48 +8,88 @@ namespace CaseAlp.Services
 {
     public class MeetingService : IMeetingService
     {
-        // You can inject a repository or DbContext here for database operations
+        private readonly ApplicationDbContext _dbContext; 
+
+        public MeetingService(ApplicationDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
         public async Task<IEnumerable<MeetingViewModel>> GetAllMeetingsAsync()
         {
-            // Implement logic to get all meetings from the database
-            // Convert database entities to MeetingViewModel and return
-            // Note: This is a placeholder, replace it with your actual database query and mapping logic
-            return new List<MeetingViewModel>();
+            var meetings = await _dbContext.Meetings.ToListAsync();
+            return meetings.Select(MapToViewModel);
         }
 
         public async Task<MeetingViewModel> GetMeetingByIdAsync(int id)
         {
-            // Implement logic to get a meeting by id from the database
-            // Convert database entity to MeetingViewModel and return
-            // Note: This is a placeholder, replace it with your actual database query and mapping logic
-            return new MeetingViewModel();
+            var meeting = await _dbContext.Meetings.FindAsync(id);
+            return MapToViewModel(meeting);
         }
 
         public async Task<bool> CreateMeetingAsync(MeetingViewModel model)
         {
-            // Implement logic to create a new meeting in the database
-            // Return true if creation is successful, false otherwise
-            // Note: This is a placeholder, replace it with your actual database creation logic
+            var entity = MapToEntity(model);
+            _dbContext.Meetings.Add(entity);
+            await _dbContext.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> UpdateMeetingAsync(int id, MeetingViewModel model)
         {
-            // Implement logic to update a meeting in the database
-            // Return true if update is successful, false otherwise
-            // Note: This is a placeholder, replace it with your actual database update logic
+            var existingMeeting = await _dbContext.Meetings.FindAsync(id);
+            if (existingMeeting == null)
+            {
+                return false; 
+            }
+
+            MapToEntity(model, existingMeeting);
+            await _dbContext.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> DeleteMeetingAsync(int id)
         {
-            // Implement logic to delete a meeting from the database
-            // Return true if deletion is successful, false otherwise
-            // Note: This is a placeholder, replace it with your actual database deletion logic
+            var meeting = await _dbContext.Meetings.FindAsync(id);
+            if (meeting == null)
+            {
+                return false; 
+            }
+
+            _dbContext.Meetings.Remove(meeting);
+            await _dbContext.SaveChangesAsync();
             return true;
         }
 
-        // Implement other meeting-related methods as needed
+       
+        private MeetingViewModel MapToViewModel(Meeting entity)
+        {
+            
+            return new MeetingViewModel
+            {
+                Title = entity.Title,
+                StartTime = entity.StartTime,
+             
+            };
+        }
+
+        private Meeting MapToEntity(MeetingViewModel model)
+        {
+           
+            return new Meeting
+            {
+                Title = model.Title,
+                StartTime = model.StartTime,
+                
+            };
+        }
+
+        private void MapToEntity(MeetingViewModel model, Meeting entity)
+        {
+            
+            entity.Title = model.Title;
+            entity.StartTime = model.StartTime;
+          
+        }
     }
 }

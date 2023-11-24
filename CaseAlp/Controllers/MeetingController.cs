@@ -27,7 +27,7 @@ namespace CaseAlp.Controllers
 
                 if (meetings == null || !meetings.Any())
                 {
-                    return Ok(); // Return an empty 200 OK response
+                    return Ok(); 
                 }
 
                 return Ok(meetings);

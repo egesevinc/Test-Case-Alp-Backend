@@ -1,30 +1,58 @@
-﻿using CaseAlp.Models;
+﻿using CaseAlp.Data;
+using CaseAlp.Models;
 using System.Threading.Tasks;
 
 namespace CaseAlp.Services
 {
     public class UserService : IUserService
     {
-        // You can inject a repository or DbContext here for database operations
+        private readonly ApplicationDbContext _dbContext; 
+
+        public UserService(ApplicationDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
         public async Task<bool> RegisterUserAsync(RegisterViewModel model)
         {
-            // Implement user registration logic
-            // Example: Check if the email is unique and save the user to the database
-            // Return true if registration is successful, false otherwise
-            // Note: This is a placeholder, replace it with your actual registration logic
+           
+            var isEmailUnique = await IsEmailUniqueAsync(model.Email);
+
+            if (!isEmailUnique)
+            {
+                return false; 
+            }
+
+            var user = new User
+            {
+                Email = model.Email,
+                
+            };
+
+            _dbContext.Users.Add(user);
+            await _dbContext.SaveChangesAsync();
+
             return true;
         }
 
         public async Task<bool> AuthenticateUserAsync(LoginViewModel model)
         {
-            // Implement user authentication logic
-            // Example: Check if the provided credentials are valid
-            // Return true if authentication is successful, false otherwise
-            // Note: This is a placeholder, replace it with your actual authentication logic
+           
+            var isValidCredentials = await IsValidCredentialsAsync(model.Email, model.Password);
+
+            return isValidCredentials;
+        }
+
+        private async Task<bool> IsEmailUniqueAsync(string email)
+        {
+           
             return true;
         }
 
-        // Implement other user-related methods as needed
+        private async Task<bool> IsValidCredentialsAsync(string email, string password)
+        {
+    
+            return true;
+        }
     }
 }

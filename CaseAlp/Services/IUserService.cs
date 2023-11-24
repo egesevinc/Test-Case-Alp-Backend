@@ -6,7 +6,7 @@ namespace CaseAlp.Services
     {
         Task<bool> RegisterUserAsync(RegisterViewModel model);
         Task<bool> AuthenticateUserAsync(LoginViewModel model);
-        // Add any other user-related methods you need
+     
     }
 
 }

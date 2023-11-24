@@ -9,7 +9,7 @@ namespace CaseAlp.Services
         Task<bool> CreateMeetingAsync(MeetingViewModel model);
         Task<bool> UpdateMeetingAsync(int id, MeetingViewModel model);
         Task<bool> DeleteMeetingAsync(int id);
-        // Add any other meeting-related methods you need
+       
     }
 
 }
